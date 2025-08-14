@@ -9,13 +9,13 @@ export default function Sidebar() {
     };
 
     return (
-        <div className="drawer lg:drawer-open">
+        <div className="drawer lg:drawer-open z-50">
             <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
 
             {/* Content area */}
             <div className="drawer-content flex flex-col items-center py-7 pt-2">
                 <label htmlFor="my-drawer-2" className="btn drawer-button lg:hidden text-xl">
-                    {/* <RxHamburgerMenu /> */}
+                    =
                 </label>
 
             </div>
@@ -33,14 +33,12 @@ export default function Sidebar() {
                         <Link to="/Home">Home</Link>
                     </li>
                     <li>
-                        <Link to="/ProductLists">ProductLists</Link>
+                        <Link to="/MatchList">Match List</Link>
                     </li>
                     <li>
-                        <Link to="/Sample">Sample</Link>
+                        <Link to="/Message">Message</Link>
                     </li>
-                    <li>
-                        <Link to="/Products">Products</Link>
-                    </li>
+                   
 
                     <div className="mt-auto">
                         <li>

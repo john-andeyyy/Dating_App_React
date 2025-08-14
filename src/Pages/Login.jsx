@@ -1,20 +1,44 @@
 import React, { useState } from "react";
-import { useNavigate } from 'react-router';
+import { Navigate, useNavigate } from 'react-router';
+import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
-export default function AuthForm() {
+export default function Login() {
+    const Baseurl = import.meta.env.VITE_BASEURL;
+    const { user } = useAuth();
+
+    if (user) {
+        return <Navigate to="/Home" replace />;
+    }
+
     const [isLogin, setIsLogin] = useState(true);
     const [registerWith, setRegisterWith] = useState("email");
+    const [errorMsg, seterrorMsg] = useState('');
     const [profileImage, setProfileImage] = useState(null);
     const navigate = useNavigate()
 
     const [formData, setFormData] = useState({
-        name: "",
+        name: "johnx3216@gmail.com",
         shortBio: "",
-        age: "",
-        email: "",
-        mobile: "",
-        password: "",
+        Birthday: "",
+        email: "johnx3216@gmail.com",
+        Password: "johnx3216@gmail.com",
+        Phonenumber: "",
     });
+
+    const cleanform = () => {
+        setFormData({
+            name: "",
+            shortBio: "",
+            Birthday: "",
+            email: "",
+            mobile: "",
+            Password: "",
+            Phonenumber: "",
+        });
+        seterrorMsg('')
+    }
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -24,25 +48,82 @@ export default function AuthForm() {
         }));
     };
 
+    const [profileImageFile, setProfileImageFile] = useState(null);
+
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             setProfileImage(URL.createObjectURL(file));
+            setProfileImageFile(file);
         }
     };
 
-    const handleSubmit = (e) => {
+
+    const { login } = useAuth()
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (isLogin) {
-            
-            alert(`Welcome, ${formData.name}!`);
-            navigate('/Home');
-        } else {
-           
-            alert(`Sign-Up successful! Bio: ${formData.shortBio}`);
+            try {
+                const res = await axios.post(`${Baseurl}/user/auth/login`, {
+                    Username: formData.name,
+                    Password: formData.Password
+                });
+
+
+                if (res.status === 200) {
+                    // alert(res.data.message || "Login successful");
+                    localStorage.setItem("userId", res.data.Data._id);
+                    localStorage.setItem("username", res.data.Data.Username);;
+                    navigate('/Home');
+                    await login();
+                }
+                navigate("/Home");
+            } catch (err) {
+                if (err.response) {
+                    seterrorMsg(err.response.data.message || "Sign-Up failed");
+                } else {
+                    alert("Network error. Please try again.");
+                }
+                console.error("Login error:", err);
+            }
         }
+        else {
+            try {
+                const formDataToSend = new FormData();
+                formDataToSend.append("Username", formData.email);
+                formDataToSend.append("Name", formData.name);
+                formDataToSend.append("Password", formData.Password);
+                formDataToSend.append("Phonenumber", formData.Phonenumber);
+                formDataToSend.append("Birthday", formData.Birthday);
+                formDataToSend.append("bio", formData.shortBio);
+
+
+                if (profileImageFile) {
+                    formDataToSend.append("Image", profileImageFile);
+                }
+
+                const res = await axios.post(`${Baseurl}/user/auth/signup`, formDataToSend, {
+                    headers: { "Content-Type": "multipart/form-data" }
+                });
+
+                alert(res.data.message);
+                setIsLogin(true);
+                cleanform()
+            } catch (err) {
+                if (err.response) {
+                    seterrorMsg(err.response.data.message);
+                } else {
+                    alert("Network error. Please try again.");
+                }
+                console.error("Sign-Up error:", err);
+            }
+        }
+
+
     };
+
 
     return (
         <div className="hero min-h-screen">
@@ -56,6 +137,10 @@ export default function AuthForm() {
                             ? "Access your account"
                             : `Register using your ${registerWith}`}
                     </p>
+                    <p className={`text-red-600 text-center transition-opacity duration-300 ${errorMsg ? 'opacity-100' : 'opacity-0'}`}>
+                        {errorMsg}
+                    </p>
+
 
                     {!isLogin && (
                         <div className="flex justify-center gap-4 mb-4">
@@ -85,12 +170,12 @@ export default function AuthForm() {
                         {isLogin ? (
                             <>
                                 <div className="md:col-span-2">
-                                    <label className="label font-semibold">Name</label>
+                                    <label className="label font-semibold">Email/Phone Number</label>
                                     <input
                                         type="text"
                                         name="name"
                                         className="input input-bordered w-full"
-                                        placeholder="Enter your name"
+                                        placeholder="Enter Email/Phone Number"
                                         value={formData.name}
                                         onChange={handleChange}
                                         required
@@ -101,10 +186,10 @@ export default function AuthForm() {
                                     <label className="label font-semibold">Password</label>
                                     <input
                                         type="password"
-                                        name="password"
+                                        name="Password"
                                         className="input input-bordered w-full"
-                                        placeholder="Enter password"
-                                        value={formData.password}
+                                        placeholder="Enter Password"
+                                        value={formData.Password}
                                         onChange={handleChange}
                                         required
                                     />
@@ -116,47 +201,66 @@ export default function AuthForm() {
                                     <label className="label font-semibold">
                                         {registerWith === "email" ? "Email" : "Mobile Number"}
                                     </label>
+                                    <label className="label font-semibold">
+                                        {registerWith === "email" ? "Email" : "Mobile Number"}
+                                    </label>
                                     <input
                                         type={registerWith === "email" ? "email" : "tel"}
                                         name={registerWith === "email" ? "email" : "mobile"}
                                         className="input input-bordered w-full"
-                                        placeholder={
-                                            registerWith === "email"
-                                                ? "Enter your email"
-                                                : "Enter your mobile number"
-                                        }
-                                        value={
-                                            registerWith === "email"
-                                                ? formData.email
-                                                : formData.mobile
-                                        }
+                                        placeholder={`Enter your ${registerWith === "email" ? "email" : "mobile number"}`}
+                                        value={registerWith === "email" ? formData.email : formData.mobile}
+                                        onChange={(e) => {
+                                            if (registerWith === "email") {
+                                                setFormData({ ...formData, email: e.target.value });
+                                            } else {
+                                                setFormData({
+                                                    ...formData,
+                                                    mobile: e.target.value.replace(/\D/g, "") // only numbers
+                                                });
+                                            }
+                                        }}
+                                        {...(registerWith !== "email" && {
+                                            pattern: "[0-9]{11}",
+                                            maxLength: 11,
+                                            inputMode: "numeric"
+                                        })}
+                                        required
+                                    />
+
+
+                                    <div>
+                                        <label className="label font-semibold">Full Name</label>
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            className="input input-bordered w-full"
+                                            placeholder="Enter your name"
+                                            value={formData.name}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="label font-semibold">Password</label>
+                                    <input
+                                        type="password"
+                                        name="Password"
+                                        className="input input-bordered w-full"
+                                        placeholder="Enter password"
+                                        value={formData.Password}
                                         onChange={handleChange}
                                         required
                                     />
                                 </div>
-
                                 <div>
-                                    <label className="label font-semibold">Full Name</label>
+                                    <label className="label font-semibold">Birthday</label>
                                     <input
-                                        type="text"
-                                        name="name"
+                                        type="date"
+                                        name="Birthday"
                                         className="input input-bordered w-full"
-                                        placeholder="Enter your name"
-                                        value={formData.name}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="label font-semibold">Age</label>
-                                    <input
-                                        type="number"
-                                        name="age"
-                                        min="1"
-                                        className="input input-bordered w-full"
-                                        placeholder="Enter your age"
-                                        value={formData.age}
+                                        value={formData.Birthday}
                                         onChange={handleChange}
                                         required
                                     />
@@ -209,7 +313,11 @@ export default function AuthForm() {
                                 ? "Don't have an account?"
                                 : "Already have an account?"}{" "}
                             <button
-                                onClick={() => setIsLogin(!isLogin)}
+                                onClick={() => {
+                                    cleanform();
+                                    setIsLogin(!isLogin);
+                                    
+                                }}
                                 className="link link-primary font-semibold"
                             >
                                 {isLogin ? "Sign Up" : "Login"}

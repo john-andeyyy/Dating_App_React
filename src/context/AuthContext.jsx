@@ -1,13 +1,13 @@
 import axios from 'axios';
 import React, { createContext, useState, useContext, useEffect } from 'react'
-const Baseurl = import.meta.env.VITE_BASEURL;
 
 
 const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
+    const Baseurl = import.meta.env.VITE_BASEURL;
 
     const [user, setUser] = useState(() => {
-        const storedUser = JSON.parse(localStorage.getItem('token'))
+        const storedUser = localStorage.getItem('userId')
         return storedUser ? storedUser : null;
     })
 
@@ -15,10 +15,12 @@ export const AuthProvider = ({ children }) => {
     const [del, setDel] = useState(false)
 
     const login = async () => {
+        const userid = localStorage.getItem('userId')
         try {
-            const res = "ads"
+            const res = await axios.get(`${Baseurl}/user/auth/retrive/${userid}`);
+            
             setData(res.data);
-            setUser(res.data);
+            setUser(res.data.Data);
         } catch (error) {
             console.error(error.response?.data?.message || error.message);
         }
@@ -28,7 +30,7 @@ export const AuthProvider = ({ children }) => {
     }, [])
 
     const logout = () => {
-        localStorage.removeItem('token')
+        localStorage.clear()
         setData({})
         setUser(null)
     }
@@ -39,7 +41,6 @@ export const AuthProvider = ({ children }) => {
         </AuthContext.Provider>
     )
 }
-// eto ginagamit para makuha ang mga {login, user, data, logout, del, setDel} sa auth context
 export const useAuth = () => {
     return useContext(AuthContext)
 }
