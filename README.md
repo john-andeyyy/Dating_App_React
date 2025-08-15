@@ -17,6 +17,8 @@ Once matched, a private chat unlocks. The app also includes profile editing, a m
 * Modern web browser (Chrome, Firefox, Edge)
 * Internet connection
 * Tested on Windows 10 and above
+* Taildwind css
+* Daisy UI
 
 # Tech Stack Overview
 * Frontend Framework: React
@@ -44,7 +46,7 @@ Once matched, a private chat unlocks. The app also includes profile editing, a m
 * Match List
 * Display all current matches
 * Allow users to unmatch (removes chat access)
-* Optional / Bonus Features (Implemented)
+# Optional / Bonus Features (Implemented)
 * Light/Dark mode UI toggle
 
 # Optional / Bonus Features (Not Yet Implemented)
@@ -59,4 +61,4 @@ Once matched, a private chat unlocks. The app also includes profile editing, a m
 * Push notifications not implemented
 
 ## Authors
-Andrei– Developer 
+Andrei – Developer 
