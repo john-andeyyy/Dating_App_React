@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import { showToast } from "../components/ToastNotif";
+import ThemeToggle from "../components/ThemeToggle";
 
 const Baseurl = import.meta.env.VITE_BASEURL;
 
@@ -30,7 +31,7 @@ export default function Profile() {
     const [previewPhoto, setPreviewPhoto] = useState(null);
 
     const inputClass =
-        "w-full border border-gray-500 bg-transparent rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400";
+        "w-full border border-gray-500 bg-base-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400";
 
     const buttonBase =
         "px-4 py-2 rounded-lg transition-all duration-200 text-white";
@@ -49,6 +50,21 @@ export default function Profile() {
             });
         }
     }, [user]);
+
+    const handleCancel = () => {
+        setIsEditing(false)
+        setUser({
+            id: user._id || "",
+            email: user.Email || "",
+            phonenumber: user.Phonenumber || "",
+            name: user.Name || "",
+            birthday: user.Birthday || "",
+            bio: user.bio || "",
+            image: user.Image || null,
+            photo: null,
+        });
+
+    }
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -135,28 +151,32 @@ export default function Profile() {
         return age;
     };
     return (
-        <div className="p-4 flex justify-center items-center min-h-screen bg-darker">
-            <div className="bg-dark shadow-xl rounded-2xl p-6 max-w-4xl w-full">
-                <h1 className="text-2xl font-bold text-center mb-6">User Profile</h1>
+        <div className="p-4 flex justify-center items-center min-h-screen bg-base-200">
+            <div className="bg-base-100 shadow-xl rounded-2xl p-6 max-w-4xl w-full">
+                <h1 className="text-2xl font-bold text-center mb-6 text-base-content">User Profile</h1>
 
                 {/* Profile Image */}
                 <div className="flex flex-col items-center gap-4 mb-6">
                     <img
                         src={
                             previewPhoto ||
-                            getImageSrc(Userdata.image) || "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg"                        }
+                            getImageSrc(Userdata.image) || "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg"}
                         alt="Profile"
                         className="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 rounded-full object-cover"
                     />
 
                     {isEditing && (
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handlePhotoChange}
-                            className="text-sm text-gray-300"
-                        />
+                        <label className="flex items-center gap-2 px-4 py-2 bg-base-300 text-base-content rounded-lg cursor-pointer hover:bg-base-200 transition-colors">
+                            Change Photo
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handlePhotoChange}
+                                className="hidden"
+                            />
+                        </label>
                     )}
+
                 </div>
 
                 {/* Change Password Mode */}
@@ -169,7 +189,7 @@ export default function Profile() {
                         className="space-y-4"
                     >
                         <div>
-                            <label className="block text-gray-400 text-sm mb-1">Current Password</label>
+                            <label className="block text-info-content text-sm mb-1 ">Current Password</label>
                             <input
                                 type="password"
                                 name="Password"
@@ -178,12 +198,12 @@ export default function Profile() {
                                 onChange={(e) =>
                                     setPasswordData({ ...passwordData, Password: e.target.value })
                                 }
-                                className={inputClass}
+                                className={`${inputClass} bg-base-200`}
                             />
                         </div>
 
                         <div>
-                            <label className="block text-gray-400 text-sm mb-1">New Password</label>
+                            <label className="block text-info-content text-sm mb-1">New Password</label>
                             <input
                                 type="password"
                                 name="NewPass"
@@ -206,7 +226,7 @@ export default function Profile() {
                             <button
                                 type="button"
                                 onClick={() => setIsChangingPass(false)}
-                                className={`${buttonBase} bg-gray-500 hover:bg-gray-600 w-full sm:w-auto`}
+                                className={`${buttonBase}  bg-warning hover:bg-yellow-600 w-full sm:w-auto`}
                             >
                                 Cancel
                             </button>
@@ -218,7 +238,7 @@ export default function Profile() {
                         {/* Edit Mode */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-gray-400 text-sm mb-1">Full Name</label>
+                                <label className="block text-info-content text-sm mb-1">Full Name</label>
                                 <input
                                     type="text"
                                     name="name"
@@ -228,7 +248,7 @@ export default function Profile() {
                                 />
                             </div>
                             {/* <div>
-                                <label className="block text-gray-400 text-sm mb-1">Phone Number</label>
+                                <label className="block text-info-content text-sm mb-1">Phone Number</label>
                                 <input
                                     type="text"
                                     name="phonenumber"
@@ -238,7 +258,7 @@ export default function Profile() {
                                 />
                             </div> */}
                             {/* <div>
-                                <label className="block text-gray-400 text-sm mb-1">Email</label>
+                                <label className="block text-info-content text-sm mb-1">Email</label>
                                 <input
                                     type="email"
                                     name="email"
@@ -248,7 +268,7 @@ export default function Profile() {
                                 />
                             </div> */}
                             {/* <div>
-                                <label className="block text-gray-400 text-sm mb-1">Birthday</label>
+                                <label className="block text-info-content text-sm mb-1">Birthday</label>
                                 <input
                                     type="date"
                                     name="birthday"
@@ -258,7 +278,7 @@ export default function Profile() {
                                 />
                             </div> */}
                             <div className="md:col-span-2">
-                                <label className="block text-gray-400 text-sm mb-1">Bio</label>
+                                <label className="block text-info-content text-sm mb-1">Bio</label>
                                 <textarea
                                     name="bio"
                                     value={Userdata.bio}
@@ -275,8 +295,8 @@ export default function Profile() {
                                 Save Changes
                             </button>
                             <button
-                                onClick={() => setIsEditing(false)}
-                                className={`${buttonBase} bg-gray-500 hover:bg-gray-600 w-full sm:w-auto`}
+                                onClick={() => handleCancel()}
+                                className={`${buttonBase} bg-warning hover:bg-yellow-600 w-full sm:w-auto`}
                             >
                                 Cancel
                             </button>
@@ -285,7 +305,7 @@ export default function Profile() {
                 ) : (
                     <>
                         {/* View Mode */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-300">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
                             {[
                                 { label: "Full Name", value: Userdata.name || "Not set" },
                                 { label: "Phone Number", value: Userdata.phonenumber || "No phone" },
@@ -294,25 +314,32 @@ export default function Profile() {
                                 { label: "Age", value: calculateAge(Userdata.birthday) },
                                 { label: "Bio", value: Userdata.bio || "No bio", fullWidth: true },
                             ].map((item, idx) => (
-                                <div key={idx} className={item.fullWidth ? "md:col-span-2" : ""}>
-                                    <p className="text-sm text-gray-400">{item.label}</p>
-                                    <p className="font-semibold break-words">{item.value}</p>
+                                <div key={idx} className={item.fullWidth ? "md:col-span-2 bg-base-200 p-2 rounded-2xl" : "bg-base-200 p-2 rounded-2xl"}>
+                                    <p className="text-sm text-base-content">{item.label}</p>
+                                    <p className="font-semibold break-words text-info-content">{item.value}</p>
                                 </div>
                             ))}
                         </div>
                         <div className="flex flex-col sm:flex-row gap-3 justify-end mt-6">
                             <button
                                 onClick={() => setIsEditing(true)}
-                                className="px-5 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white w-full sm:w-auto transition-all duration-200"
+                                className="px-5 py-2 rounded-lg bg-accent hover:bg-green-500 text-black w-full sm:w-auto transition-all duration-200"
                             >
                                 Edit Profile
                             </button>
                             <button
                                 onClick={() => setIsChangingPass(true)}
-                                className="px-5 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white w-full sm:w-auto transition-all duration-200"
+                                className="px-5 py-2 rounded-lg bg-accent hover:bg-green-500 text-black w-full sm:w-auto transition-all duration-200"
                             >
                                 Change Password
                             </button>
+
+                            <div className="px-5 py-2 rounded-lg bg-accent  text-black w-full sm:w-auto transition-all duration-200"
+                            >
+
+                                <ThemeToggle />
+
+                            </div>
                         </div>
                     </>
                 )}

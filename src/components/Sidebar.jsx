@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import ThemeToggle from "./ThemeToggle";
 
 const menuItems = [
     { name: "User Profile Management", path: "/Profile" },
@@ -25,44 +26,63 @@ export default function Sidebar() {
 
     return (
         <div className="drawer lg:drawer-open z-50">
+            {/* Drawer toggle */}
             <input id="sidebar-drawer" type="checkbox" className="drawer-toggle" />
 
             {/* Main content */}
-            <div className="drawer-content flex flex-col items-center py-6  ">
+            <div className="drawer-content flex flex-col items-center py-4">
                 <label
                     htmlFor="sidebar-drawer"
-                    className="btn btn-square drawer-button lg:hidden text-xl mb-4 text-[#E2E2B6] bg-[#03346E] hover:bg-[#6EACDA] transition-colors"
+                    className="btn btn-square drawer-button lg:hidden text-2xl text-base-content bg-[#03346E] hover:bg-[#6EACDA] transition-colors"
                 >
-                    
+                    ☰
                 </label>
             </div>
 
-            {/* Sidebar menu */}
+            {/* Sidebar */}
             <div className="drawer-side">
-                <label htmlFor="sidebar-drawer" className="drawer-overlay" aria-label="Close sidebar" />
+                <label
+                    htmlFor="sidebar-drawer"
+                    className="drawer-overlay"
+                    aria-label="Close sidebar"
+                />
 
-                <ul className="menu w-64 flex flex-col min-h-full p-6 shadow-lg bg-darker text-[#E2E2B6]">
-                    {menuItems.map((item) => (
-                        <li key={item.path}>
+                <aside className="menu w-64 min-h-full flex flex-col bg-base-200 text-base-content shadow-lg">
+                    <div className="p-6 border-b border-[#03346E] text-center">
+                        <h1 className="text-2xl font-bold tracking-wide">
+                             Dating Webapp
+                        </h1>
+                        <p className="text-sm italic text-info-content mt-1">
+                            Find your perfect match
+                        </p>
+
+                    </div>
+
+                    {/* Menu Links */}
+                    <nav className="flex-1 px-4 py-6 space-y-2">
+                        {menuItems.map((item) => (
                             <Link
+                                key={item.path}
                                 to={item.path}
-                                className="py-2 px-3 rounded hover:bg-[#E2E2B6] hover:text-[#03346E] transition-colors"
+                                className="block py-2 px-3 rounded-md bg-base-100/20  border-2 border-base-content hover:bg-[#03346E] hover:text-white transition-colors"
                                 onClick={closeSidebar}
                             >
                                 {item.name}
                             </Link>
-                        </li>
-                    ))}
+                        ))}
+                    </nav>
 
-                    <li className="mt-auto">
+                    {/* Logout Button */}
+                    <div className="p-4 border-t border-[#03346E]">
                         <button
                             onClick={handleLogout}
-                            className="w-full py-2 px-4 rounded bg-[#6EACDA] text-[#021526] font-semibold hover:bg-[#03346E] hover:text-[#E2E2B6] transition-colors"
+                            className="w-full py-2 px-4 rounded-md bg-accent text-[#021526] font-semibold hover:bg-green-500 hover:text-base-content transition-colors"
                         >
                             Logout
                         </button>
-                    </li>
-                </ul>
+
+                    </div>
+                </aside>
             </div>
         </div>
     );

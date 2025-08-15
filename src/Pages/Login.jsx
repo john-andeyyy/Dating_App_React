@@ -12,6 +12,7 @@ export default function Login() {
         return <Navigate to="/Home" replace />;
     }
 
+    const [isLoading, setisLoading] = useState(false);
     const [isLogin, setIsLogin] = useState(true);
     const [registerWith, setRegisterWith] = useState("email");
     const [errorMsg, seterrorMsg] = useState('');
@@ -19,11 +20,11 @@ export default function Login() {
     const navigate = useNavigate()
 
     const [formData, setFormData] = useState({
-        name: "johnx3216@gmail.com",
+        name: "",
         shortBio: "",
         Birthday: "",
-        email: "johnx3216@gmail.com",
-        Password: "johnx3216@gmail.com",
+        email: "",
+        Password: "",
         Phonenumber: "",
     });
 
@@ -33,7 +34,6 @@ export default function Login() {
             shortBio: "",
             Birthday: "",
             email: "",
-            mobile: "",
             Password: "",
             Phonenumber: "",
         });
@@ -66,6 +66,7 @@ export default function Login() {
         e.preventDefault();
 
         if (isLogin) {
+            setisLoading(true)
             try {
                 const res = await axios.post(`${Baseurl}/user/auth/login`, {
                     Username: formData.name,
@@ -85,7 +86,7 @@ export default function Login() {
             } catch (err) {
                 if (err.response) {
                     seterrorMsg(err.response.data.message || "Sign-Up failed");
-                    showToast(err.response.data.message, 'error')
+                    // showToast(err.response.data.message, 'error')
 
                 } else {
                     alert("Network error. Please try again.");
@@ -95,6 +96,8 @@ export default function Login() {
             }
         }
         else {
+            setisLoading(true)
+
             try {
                 const formDataToSend = new FormData();
                 formDataToSend.append("Username", formData.email);
@@ -103,7 +106,6 @@ export default function Login() {
                 formDataToSend.append("Phonenumber", formData.Phonenumber);
                 formDataToSend.append("Birthday", formData.Birthday);
                 formDataToSend.append("bio", formData.shortBio);
-
 
                 if (profileImageFile) {
                     formDataToSend.append("Image", profileImageFile);
@@ -119,28 +121,28 @@ export default function Login() {
             } catch (err) {
                 if (err.response) {
                     seterrorMsg(err.response.data.message);
-                    showToast(err.response.data.message,'error')
+                    showToast(err.response.data.message, 'error')
 
                 } else {
                     alert("Network error. Please try again.");
                 }
-                showToast('Sign-Up error:', 'error')
+                // showToast('Sign-Up error:', 'error')
                 // console.error("Sign-Up error:", err);
             }
         }
-
+        setisLoading(false)
 
     };
 
 
     return (
-        <div className="hero min-h-screen bg-darker">
+        <div className="hero min-h-screen bg-base-200">
             <div className="hero-content flex-col ">
-                <div className="card w-full max-w-2xl shadow-2xl rounded-2xl p-8 bg-dark text-white">
-                    <h1 className="text-3xl font-bold text-center mb-2 text-primary">
+                <div className="card w-full max-w-2xl shadow-2xl rounded-2xl p-8 bg-base-">
+                    <h1 className="text-3xl font-bold text-center mb-2 text-accent">
                         {isLogin ? "Login" : "New User Sign-Up"}
                     </h1>
-                    <p className="text-center text-gray-200 mb-6">
+                    <p className="text-center text-info-content mb-6">
                         {isLogin
                             ? "Access your account"
                             : `Register using your ${registerWith}`}
@@ -180,7 +182,7 @@ export default function Login() {
                                     <input
                                         type="text"
                                         name="name"
-                                        className="input input-bordered w-full"
+                                        className="input input-bordered w-full bg-base-200"
                                         placeholder="Enter Email/Phone Number"
                                         value={formData.name}
                                         onChange={handleChange}
@@ -193,7 +195,7 @@ export default function Login() {
                                     <input
                                         type="password"
                                         name="Password"
-                                        className="input input-bordered w-full"
+                                        className="input input-bordered w-full bg-base-200"
                                         placeholder="Enter Password"
                                         value={formData.Password}
                                         onChange={handleChange}
@@ -204,25 +206,25 @@ export default function Login() {
                         ) : (
                             <>
                                 <div className="md:col-span-2">
-                                    <label className="label font-semibold">
+                                    {/* <label className="label font-semibold">
                                         {registerWith === "email" ? "Email" : "Mobile Number"}
-                                    </label>
+                                    </label> */}
                                     <label className="label font-semibold">
                                         {registerWith === "email" ? "Email" : "Mobile Number"}
                                     </label>
                                     <input
                                         type={registerWith === "email" ? "email" : "tel"}
                                         name={registerWith === "email" ? "email" : "mobile"}
-                                        className="input input-bordered w-full"
+                                            className="input input-bordered w-full bg-base-200"
                                         placeholder={`Enter your ${registerWith === "email" ? "email" : "mobile number"}`}
-                                        value={registerWith === "email" ? formData.email : formData.mobile}
+                                            value={registerWith === "email" ? formData.email : formData.Phonenumber}
                                         onChange={(e) => {
                                             if (registerWith === "email") {
                                                 setFormData({ ...formData, email: e.target.value });
                                             } else {
                                                 setFormData({
                                                     ...formData,
-                                                    mobile: e.target.value.replace(/\D/g, "") // only numbers
+                                                    Phonenumber: e.target.value.replace(/\D/g, "") // only numbers
                                                 });
                                             }
                                         }}
@@ -240,7 +242,7 @@ export default function Login() {
                                         <input
                                             type="text"
                                             name="name"
-                                            className="input input-bordered w-full"
+                                                className="input input-bordered w-full bg-base-200"
                                             placeholder="Enter your name"
                                             value={formData.name}
                                             onChange={handleChange}
@@ -253,7 +255,7 @@ export default function Login() {
                                     <input
                                         type="password"
                                         name="Password"
-                                        className="input input-bordered w-full"
+                                            className="input input-bordered w-full bg-base-200"
                                         placeholder="Enter password"
                                         value={formData.Password}
                                         onChange={handleChange}
@@ -265,7 +267,7 @@ export default function Login() {
                                     <input
                                         type="date"
                                         name="Birthday"
-                                        className="input input-bordered w-full"
+                                            className="input input-bordered w-full bg-base-200"
                                         value={formData.Birthday}
                                         onChange={handleChange}
                                         required
@@ -276,7 +278,7 @@ export default function Login() {
                                     <label className="label font-semibold">Short Bio</label>
                                     <textarea
                                         name="shortBio"
-                                        className="textarea textarea-bordered w-full"
+                                            className="textarea textarea-bordered w-full bg-base-200"
                                         placeholder="Tell us about yourself..."
                                         rows="3"
                                         value={formData.shortBio}
@@ -307,13 +309,19 @@ export default function Login() {
                         )}
 
                         <div className="md:col-span-2 mt-4">
-                            <button className="btn w-full bg-primary text-dark hover:bg-darker hover:text-white transition-colors duration-300">
-                                {isLogin ? "Login" : "Sign Up"}
+                            <button className="btn w-full bg-accent text-black transition-colors duration-300">
+                                {isLoading ? (
+                                    <div className="flex justify-center items-center h-full">
+                                        <span className="loading loading-spinner loading-xl"></span>
+                                    </div>
+                                ) : (
+                                    <> {isLogin ? "Login" : "Sign Up"}</>
+                                )}
                             </button>
                         </div>
                     </form>
 
-                    <div className="mt-6 text-center text-gray-200">
+                    <div className="mt-6 text-center text-white">
                         <p className="text-sm ">
                             {isLogin
                                 ? "Don't have an account?"

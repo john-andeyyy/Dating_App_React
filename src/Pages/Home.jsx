@@ -111,7 +111,8 @@ export default function Home() {
 
   if (!profiles.length || currentIndex >= profiles.length) {
     return (
-      <div className="flex items-center justify-center h-screen bg-darker flex-col px-4 text-[#E2E2B6]">
+      <div className="flex items-center justify-center h-screen
+        flex-col px-4 text-base-content bg-base-200">
         <h2 className="text-2xl font-bold mb-4">No more profiles</h2>
         <p className="text-[#6EACDA]">Check back later for more people to meet!</p>
       </div>
@@ -120,7 +121,7 @@ export default function Home() {
 
   return (
     <div
-      className="flex items-center justify-center min-h-screen overflow-hidden px-4 bg-darker"
+      className="flex items-center justify-center min-h-screen overflow-hidden px-4 bg-base-200 relative"
       onMouseDown={(e) => handleStart(e.clientX, e.clientY)}
       onMouseMove={(e) => handleMove(e.clientX, e.clientY)}
       onMouseUp={handleEnd}
@@ -129,6 +130,13 @@ export default function Home() {
       onTouchMove={(e) => handleMove(e.touches[0].clientX, e.touches[0].clientY)}
       onTouchEnd={handleEnd}
     >
+      {/* Overlay text */}
+      <div className="absolute top-10 left-1/2 -translate-x-1/2 text-center z-50">
+        <p className="text-lg font-semibold text-primary animate-pulse bg-base-100/70 px-4 py-2 rounded-full shadow-lg">
+          🔍 Matching...
+        </p>
+      </div>
+
       <div className="relative w-full max-w-sm h-[500px] flex items-center justify-center">
         {profiles
           .slice(currentIndex, currentIndex + 3)
@@ -150,13 +158,13 @@ export default function Home() {
                 {isTop && (
                   <>
                     <div
-                      className="absolute top-6 left-6 z-50 font-extrabold text-3xl border-4 px-4 py-2 rounded-lg shadow-lg bg-[#E2E2B6]/50 backdrop-blur-sm text-[#6EACDA] border-[#6EACDA]"
+                      className="absolute top-6 left-6 z-50 font-extrabold text-3xl border-4 px-4 py-2 rounded-lg shadow-lg backdrop-blur-sm text-success border-success"
                       style={{ opacity: likeOpacity, transform: "rotate(-15deg)" }}
                     >
                       LIKE
                     </div>
                     <div
-                      className="absolute top-6 right-6 z-50 font-extrabold text-3xl border-4 px-4 py-2 rounded-lg shadow-lg bg-[#E2E2B6]/50 backdrop-blur-sm text-[#03346E] border-[#03346E]"
+                      className="absolute top-6 right-6 z-50 font-extrabold text-3xl border-4 px-4 py-2 rounded-lg shadow-lg backdrop-blur-sm text-error border-error"
                       style={{ opacity: nopeOpacity, transform: "rotate(15deg)" }}
                     >
                       SKIP
@@ -171,6 +179,7 @@ export default function Home() {
           })}
       </div>
     </div>
+
   );
 }
 

@@ -10,8 +10,9 @@ export default function MatchList() {
   const userId = user._id
 
 
-  const fetchMatches = () => {
-    if (!userId) return; // safety check
+  const fetchMatches = (removedId) => {
+    setMatches((prev) => prev.filter((match) => match.id !== removedId));
+    if (!userId) return; 
     axios
       .get(`${Baseurl}/Matching/MatchedList/${userId}`)
       .then((res) => {
@@ -57,8 +58,8 @@ export default function MatchList() {
   };
 
   return (
-     <div className="flex flex-col h-screen bg-darker">
-      <h1 className="p-4 pb-2 text-xl opacity-80 tracking-wide flex-shrink-0 text-dark">
+     <div className="flex flex-col h-screen bg-base-200">
+      <h1 className="p-4 pb-2 text-xl font-bold tracking-wide flex-shrink-0 text-base-content">
         All current matches
       </h1>
       <div className="flex-grow overflow-y-auto p-4 space-y-4">
@@ -75,7 +76,7 @@ export default function MatchList() {
             />
           ))
         ) : (
-          <div className="flex items-center justify-center h-full text-gray-500">
+            <div className="flex items-center justify-center h-full text-info-content">
             No matches found
           </div>
         )}

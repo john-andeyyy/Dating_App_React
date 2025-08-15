@@ -16,7 +16,7 @@ export default function List({ id, name, age, bio, img, onRemoved }) {
             });
             console.log("Remove response:", res.data);
 
-            if (onRemoved) onRemoved();
+            if (onRemoved) onRemoved(id);
 
             showToast(`Removed`, "warn", { position: "top-center" });
         } catch (err) {
@@ -27,7 +27,7 @@ export default function List({ id, name, age, bio, img, onRemoved }) {
 
 
     return (
-        <div className="bg-light rounded-lg shadow-md p-4 flex items-center gap-4 hover:shadow-lg transition">
+        <div className=" rounded-lg shadow-md p-4 flex items-center gap-4 hover:shadow-lg transition bg-base-100">
             <img
                 className="w-16 h-16 rounded-lg object-cover"
                 src={img}
@@ -36,10 +36,10 @@ export default function List({ id, name, age, bio, img, onRemoved }) {
 
             <div className="flex-1">
                 <div className="flex items-center gap-2">
-                    <h2 className="text-lg font-semibold">{name}</h2>
-                    <span className="text-sm text-gray-500">{age} yrs old</span>
+                    <h2 className="text-lg font-semibold text-base-content">{name}</h2>
+                    <span className="text-sm text-info-content">{age} yrs old</span>
                 </div>
-                <p className="text-sm text-gray-600 mt-1">{bio}</p>
+                <p className="text-sm text-info-content mt-1">{bio}</p>
             </div>
             <div className="flex gap-2">
                 <button
