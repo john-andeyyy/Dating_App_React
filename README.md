@@ -1,12 +1,62 @@
-# React + Vite
+# Basic Dating App – MatchConnect
+A simple web-based dating app that allows users to create profiles, discover and match with other users, and chat after matching. Built with React and deployed on Vercel.
+# Description
+MatchConnect is a basic dating app designed for smooth desktop use.
+Users can:
+Sign up using email or mobile number
+Create a profile with personal details and a photo
+Browse and discover other users
+Like or skip profiles
+Match only when both users like each other
+Once matched, a private chat unlocks. The app also includes profile editing, a match list, and a light/dark mode toggle.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ Getting Started
+Dependencies
+Node.js v18+
+npm v9+
+Modern web browser (Chrome, Firefox, Edge)
+Internet connection
+Tested on Windows 10 and above
 
-Currently, two official plugins are available:
+# Tech Stack Overview
+Frontend Framework: React
+Routing: React Router
+HTTP Client: Axios
+UI Notifications: React Toast
+Deployment: Vercel
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+# Complete Feature List
+New User Sign-Up
+Register using email or mobile number
+Enter name, age, short bio, and upload a profile picture
+Returning User Login
+Secure login with email/mobile and password
+User Profile Management
+View your profile in the browser
+Edit details: name, bio, profile photo
+User Discovery & Matching
+Browse profiles via desktop interface
+Swipe right to like, left to skip
+Only form a match when both users like each other
+Avoid showing the same profile again
+Chat (Unlocked Only After Matching)
+Send and receive text messages
+Match List
+Display all current matches
+Allow users to unmatch (removes chat access)
+Optional / Bonus Features (Implemented)
+Light/Dark mode UI toggle
 
-## Expanding the ESLint configuration
+# Optional / Bonus Features (Not Yet Implemented)
+Browser-based push notification simulation for new matches/messages
+Profile verification badge/flag
+Boost or Super Like feature
+Real-time or near real-time chat updates
+Filters: age, distance
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+# Known Issues / Limitations
+No real-time chat updates yet
+Push notifications not implemented
+
+## Authors
+Andrei– Developer 
