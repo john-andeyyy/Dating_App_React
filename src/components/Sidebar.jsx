@@ -1,56 +1,67 @@
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+
+const menuItems = [
+    { name: "User Profile Management", path: "/Profile" },
+    { name: "Home", path: "/Home" },
+    { name: "Match List", path: "/MatchList" },
+    { name: "Message", path: "/Message" },
+];
 
 export default function Sidebar() {
     const { logout } = useAuth();
 
-    const logouthandler = () => {
+    const handleLogout = () => {
         logout();
+        closeSidebar();
+    };
+
+    const closeSidebar = () => {
+        const checkbox = document.getElementById("sidebar-drawer");
+        if (checkbox && checkbox.checked) {
+            checkbox.checked = false;
+        }
     };
 
     return (
         <div className="drawer lg:drawer-open z-50">
-            <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
+            <input id="sidebar-drawer" type="checkbox" className="drawer-toggle" />
 
-            {/* Content area */}
-            <div className="drawer-content flex flex-col items-center py-7 pt-2">
-                <label htmlFor="my-drawer-2" className="btn drawer-button lg:hidden text-xl">
-                    =
+            {/* Main content */}
+            <div className="drawer-content flex flex-col items-center py-6  ">
+                <label
+                    htmlFor="sidebar-drawer"
+                    className="btn btn-square drawer-button lg:hidden text-xl mb-4 text-[#E2E2B6] bg-[#03346E] hover:bg-[#6EACDA] transition-colors"
+                >
+                    
                 </label>
-
             </div>
 
+            {/* Sidebar menu */}
             <div className="drawer-side">
-                <label htmlFor="my-drawer-2" aria-label="close sidebar" className="drawer-overlay"></label>
+                <label htmlFor="sidebar-drawer" className="drawer-overlay" aria-label="Close sidebar" />
 
-                <ul className="menu bg-base-200 text-base-content w-64 p-4 flex flex-col min-h-full">
-                    <li>
-                        <Link to="/Profile" className="flex items-center gap-2">
-                            User Profile Management
-                        </Link>
-                    </li>
-                    <li>
-                        <Link to="/Home">Home</Link>
-                    </li>
-                    <li>
-                        <Link to="/MatchList">Match List</Link>
-                    </li>
-                    <li>
-                        <Link to="/Message">Message</Link>
-                    </li>
-                   
-
-                    <div className="mt-auto">
-                        <li>
+                <ul className="menu w-64 flex flex-col min-h-full p-6 shadow-lg bg-darker text-[#E2E2B6]">
+                    {menuItems.map((item) => (
+                        <li key={item.path}>
                             <Link
-                                to="/"
-                                className="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700"
-                                onClick={logouthandler}
+                                to={item.path}
+                                className="py-2 px-3 rounded hover:bg-[#E2E2B6] hover:text-[#03346E] transition-colors"
+                                onClick={closeSidebar}
                             >
-                                Logout
+                                {item.name}
                             </Link>
                         </li>
-                    </div>
+                    ))}
+
+                    <li className="mt-auto">
+                        <button
+                            onClick={handleLogout}
+                            className="w-full py-2 px-4 rounded bg-[#6EACDA] text-[#021526] font-semibold hover:bg-[#03346E] hover:text-[#E2E2B6] transition-colors"
+                        >
+                            Logout
+                        </button>
+                    </li>
                 </ul>
             </div>
         </div>

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { createContext, useState, useContext, useEffect } from 'react'
+import { showToast } from '../components/ToastNotif';
 
 
 const AuthContext = createContext();
@@ -17,13 +18,13 @@ export const AuthProvider = ({ children }) => {
     const login = async () => {
         const userid = localStorage.getItem('userId')
         console.log("user id: " + userid);
-        
+
         try {
             const res = await axios.get(`${Baseurl}/user/auth/retrive/${userid}`);
-            
+
             setuserData(res.data.Data);
             setUser(res.data.Data);
-            
+
         } catch (error) {
             console.error(error.response?.data?.message || error.message);
         }
@@ -36,6 +37,8 @@ export const AuthProvider = ({ children }) => {
         localStorage.clear()
         setuserData({})
         setUser(null)
+        showToast('Logout successful')
+
     }
 
     return (

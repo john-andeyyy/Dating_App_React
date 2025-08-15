@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
+import { showToast } from "../components/ToastNotif";
 
 const Baseurl = import.meta.env.VITE_BASEURL;
 
@@ -77,11 +78,14 @@ export default function Profile() {
                 headers: { "Content-Type": "multipart/form-data" },
             });
 
-            alert("Profile updated successfully!");
+            showToast("Profile updated successfully!");
+
             setIsEditing(false);
         } catch (error) {
             console.error("Error updating profile:", error);
             alert("Failed to update profile");
+            showToast(error.response.data.message, 'error')
+
         }
     };
 
@@ -96,12 +100,16 @@ export default function Profile() {
                 Password: passwordData.Password,
                 NewPass: passwordData.NewPass,
             });
-            alert("Password changed successfully!");
+            // alert("Password changed successfully!");
+            showToast('Password changed successfully!')
+
             setIsChangingPass(false);
             setPasswordData({ Password: "", NewPass: "" });
         } catch (error) {
             console.error("Error changing password:", error);
-            alert(error.response.data.message);
+            // alert(error.response.data.message);
+            showToast(error.response.data.message, 'error')
+
         }
     };
 
@@ -127,8 +135,8 @@ export default function Profile() {
         return age;
     };
     return (
-        <div className="p-4 flex justify-center items-center min-h-screen">
-            <div className="bg-[#191E24] shadow-xl rounded-2xl p-6 max-w-4xl w-full">
+        <div className="p-4 flex justify-center items-center min-h-screen bg-darker">
+            <div className="bg-dark shadow-xl rounded-2xl p-6 max-w-4xl w-full">
                 <h1 className="text-2xl font-bold text-center mb-6">User Profile</h1>
 
                 {/* Profile Image */}

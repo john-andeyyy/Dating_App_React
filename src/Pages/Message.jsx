@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 
-
 export default function Message() {
     const { user, userdata } = useAuth();
     const Baseurl = import.meta.env.VITE_BASEURL;
@@ -14,15 +13,16 @@ export default function Message() {
 
     const userId = user?._id;
 
+    // Fetch matched list
     useEffect(() => {
         if (!userId) return;
-
         axios
             .get(`${Baseurl}/Msg/MatchedListMsg/${userId}`)
             .then((res) => setMatchedList(res.data?.data || []))
             .catch((err) => console.error("Error fetching matched list:", err));
     }, [userId, Baseurl]);
 
+    // Fetch messages for selected match
     const handleSelectMatch = async (match) => {
         setSelectedMatch(match);
         if (!userId) return;
@@ -45,6 +45,7 @@ export default function Message() {
         }
     };
 
+    // Send message
     const handleSend = async () => {
         if (!inputText.trim() || !selectedMatch || !userdata) return;
 
@@ -76,21 +77,20 @@ export default function Message() {
         }
     };
 
-    if (!userId || !userdata) {
-        return <div>Loading...</div>;
-    }
+    if (!userId || !userdata) return <div className="flex items-center justify-center h-screen text-dark">Loading...</div>;
+
     return (
-        <div className="flex h-screen">
+        <div className="flex flex-col lg:flex-row h-screen">
             {/* Left Panel */}
-            <div className="w-1/3 border-r border-gray-300 flex flex-col">
-                <h2 className="p-4 text-lg font-semibold border-b border-gray-300">Matches</h2>
+            <div className="w-full lg:w-1/3 border-r border-dark flex flex-col bg-darker">
+                <h2 className="p-4 text-lg font-semibold border-b border-dark text-dark">Matches</h2>
                 <div className="flex-grow overflow-y-auto">
-                    <ul>
+                    <ul className="bg-blue-950">
                         {matchedList.map((match) => (
                             <li
                                 key={match._id}
                                 onClick={() => handleSelectMatch(match)}
-                                className={`cursor-pointer flex items-center gap-3 px-4 py-3 hover:bg-gray-500 ${selectedMatch?._id === match._id ? "bg-gray-600 font-semibold" : ""
+                                className={`cursor-pointer flex items-center gap-3 px-4 py-3 hover:bg-primary transition-colors rounded ${selectedMatch?._id === match._id ? "bg-primary font-semibold text-white" : "text-dark"
                                     }`}
                             >
                                 <img
@@ -99,19 +99,19 @@ export default function Message() {
                                         "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg"
                                     }
                                     alt={match.name}
-                                    className="w-10 h-10 rounded-full object-cover"
+                                    className="w-10 h-10 rounded-full object-cover border-2 border-dark"
                                 />
                                 <div className="flex flex-col flex-1">
                                     <div className="flex justify-between items-center">
                                         <span>{match.name}</span>
                                         {match.lastMessageAt && (
-                                            <span className="text-xs text-gray-400">
+                                            <span className="text-xs text-dark/60">
                                                 {new Date(match.lastMessageAt).toLocaleDateString()}{" "}
-                                                {new Date(match.lastMessageAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: true })}
+                                                {new Date(match.lastMessageAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                                             </span>
                                         )}
                                     </div>
-                                    <span className="text-xs text-gray-400 truncate max-w-[160px]">
+                                    <span className="text-xs text-dark/70 truncate max-w-[160px]">
                                         {match.lastMessage || "No messages yet"}
                                     </span>
                                 </div>
@@ -122,26 +122,28 @@ export default function Message() {
             </div>
 
             {/* Right Panel */}
-            <div className="flex flex-col flex-1 p-6 bg-gray-600">
+            <div className="flex flex-col flex-1 p-4 lg:p-6 bg-darker">
                 {selectedMatch ? (
                     <>
-                        <h3 className="text-xl font-bold mb-4">Messages with {selectedMatch.name}</h3>
+                        <h3 className="text-xl font-bold mb-4 text-dark">Messages with {selectedMatch.name}</h3>
 
-                        <div className="flex-1 overflow-y-auto mb-4 p-4 bg-gray-800 rounded shadow-inner flex flex-col">
-                            {(messages[selectedMatch._id] || []).map((msg, i) => (
-                                <div
-                                    key={i}
-                                    className={`max-w-xs px-4 py-2 my-1 rounded-lg ${msg.sender === userdata.Email ? "bg-blue-500 text-white" : "bg-gray-300 text-gray-800"
-                                        }`}
-                                    style={{ alignSelf: msg.sender === userdata.Email ? "flex-end" : "flex-start" }}
-                                >
-                                    <div className="text-xs font-semibold mb-1">{msg.senderName}</div>
-                                    {msg.text}
-                                    <div className="text-xs text-gray-200 mt-1">
-                                        {msg.date} • {msg.time}
+                        <div className="flex-1 overflow-y-auto mb-4 p-4 bg-dark rounded-lg shadow-inner flex flex-col gap-2">
+                            {(messages[selectedMatch._id] || []).map((msg, i) => {
+                                const isSent = msg.sender === userdata.Email;
+                                return (
+                                    <div
+                                        key={i}
+                                        className={`max-w-xs px-4 py-2 rounded-xl shadow-sm ${isSent ? "bg-primary text-white self-end" : "bg-light text-dark self-start"
+                                            }`}
+                                    >
+                                        <div className="text-xs font-semibold mb-1">{msg.senderName}</div>
+                                        <div className="text-sm">{msg.text}</div>
+                                        <div className="text-xs text-dark/50 mt-1 text-right">
+                                            {msg.date} • {msg.time}
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
 
                         <div className="flex gap-2">
@@ -149,16 +151,19 @@ export default function Message() {
                                 rows={2}
                                 value={inputText}
                                 onChange={(e) => setInputText(e.target.value)}
-                                className="flex-grow resize-none p-2 border border-gray-300 rounded"
+                                className="flex-grow resize-none p-2 border border-dark rounded focus:ring-2 focus:ring-primary"
                                 placeholder="Type your message..."
                             />
-                            <button onClick={handleSend} className="bg-blue-600 hover:bg-blue-700 text-white px-4 rounded">
+                            <button
+                                onClick={handleSend}
+                                className="bg-primary hover:bg-dark text-white px-4 rounded transition-colors"
+                            >
                                 Send
                             </button>
                         </div>
                     </>
                 ) : (
-                    <div className="flex items-center justify-center h-full text-gray-400 italic">
+                    <div className="flex items-center justify-center h-full text-dark/60 italic">
                         Select a match to view messages
                     </div>
                 )}

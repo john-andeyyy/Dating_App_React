@@ -1,6 +1,8 @@
 import React from "react";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
+import { showToast } from "./ToastNotif";
+const Baseurl = import.meta.env.VITE_BASEURL;
 
 export default function List({ id, name, age, bio, img, onRemoved }) {
     const { user } = useAuth();
@@ -8,7 +10,7 @@ export default function List({ id, name, age, bio, img, onRemoved }) {
 
     const handleRemoveClick = async () => {
         try {
-            const res = await axios.put("http://localhost:3000/Matching/unMatch", {
+            const res = await axios.put(`${Baseurl}/Matching/unMatch`, {
                 Userid: userId,
                 MatchingId: id,
             });
@@ -16,13 +18,16 @@ export default function List({ id, name, age, bio, img, onRemoved }) {
 
             if (onRemoved) onRemoved();
 
+            showToast(`Removed`, "warn", { position: "top-center" });
         } catch (err) {
             console.error("Error removing match:", err);
+            showToast("Failed to remove match", "error");
         }
     };
 
+
     return (
-        <div className="bg-base-100 rounded-lg shadow-md p-4 flex items-center gap-4 hover:shadow-lg transition">
+        <div className="bg-light rounded-lg shadow-md p-4 flex items-center gap-4 hover:shadow-lg transition">
             <img
                 className="w-16 h-16 rounded-lg object-cover"
                 src={img}
@@ -45,5 +50,6 @@ export default function List({ id, name, age, bio, img, onRemoved }) {
                 </button>
             </div>
         </div>
+
     );
 }

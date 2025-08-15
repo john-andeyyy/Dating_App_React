@@ -6,22 +6,39 @@ import Home from './Pages/Home';
 import Profile from './Pages/Profile';
 import MatchList from './Pages/MatchList';
 import Message from './Pages/Message';
+import { Bounce, ToastContainer, Zoom } from 'react-toastify';
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Login />} />
+    <div>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        limit={3}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable={false}
+        pauseOnHover={false}
+        theme="light"
+        transition={Zoom}
+      />
+      <Routes>
+        <Route path="/" element={<Login />} />
 
-      <Route element={<ProtectedRoutes />}>
-        <Route element={<Layout />}>
-          <Route path='/Home' element={<Home />} />
-          <Route path='/Profile' element={<Profile />} />
-          <Route path='/MatchList' element={<MatchList />} />
-          <Route path='/Message' element={<Message />} />
+        <Route element={<ProtectedRoutes />}>
+          <Route element={<Layout />}>
+            <Route path='/Home' element={<Home />} />
+            <Route path='/Profile' element={<Profile />} />
+            <Route path='/MatchList' element={<MatchList />} />
+            <Route path='/Message' element={<Message />} />
+          </Route>
         </Route>
-      </Route>
 
-    </Routes>
+      </Routes>
+    </div>
   );
 }
 

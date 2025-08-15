@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Navigate, useNavigate } from 'react-router';
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import { showToast } from "../components/ToastNotif";
 
 export default function Login() {
     const Baseurl = import.meta.env.VITE_BASEURL;
@@ -76,6 +77,7 @@ export default function Login() {
                     // alert(res.data.message || "Login successful");
                     localStorage.setItem("userId", res.data.Data._id);
                     localStorage.setItem("username", res.data.Data.Username);;
+                    showToast('Login successful')
                     navigate('/Home');
                     await login();
                 }
@@ -83,8 +85,11 @@ export default function Login() {
             } catch (err) {
                 if (err.response) {
                     seterrorMsg(err.response.data.message || "Sign-Up failed");
+                    showToast(err.response.data.message, 'error')
+
                 } else {
                     alert("Network error. Please try again.");
+                    showToast("Network error. Please try again.", 'error')
                 }
                 console.error("Login error:", err);
             }
@@ -108,16 +113,19 @@ export default function Login() {
                     headers: { "Content-Type": "multipart/form-data" }
                 });
 
-                alert(res.data.message);
+                showToast(res.data.message)
                 setIsLogin(true);
                 cleanform()
             } catch (err) {
                 if (err.response) {
                     seterrorMsg(err.response.data.message);
+                    showToast(err.response.data.message,'error')
+
                 } else {
                     alert("Network error. Please try again.");
                 }
-                console.error("Sign-Up error:", err);
+                showToast('Sign-Up error:', 'error')
+                // console.error("Sign-Up error:", err);
             }
         }
 
@@ -126,18 +134,18 @@ export default function Login() {
 
 
     return (
-        <div className="hero min-h-screen">
-            <div className="hero-content flex-col">
-                <div className="card w-full max-w-2xl shadow-2xl rounded-2xl p-8">
-                    <h1 className="text-3xl font-bold text-center mb-2">
+        <div className="hero min-h-screen bg-darker">
+            <div className="hero-content flex-col ">
+                <div className="card w-full max-w-2xl shadow-2xl rounded-2xl p-8 bg-dark text-white">
+                    <h1 className="text-3xl font-bold text-center mb-2 text-primary">
                         {isLogin ? "Login" : "New User Sign-Up"}
                     </h1>
-                    <p className="text-center text-gray-500 mb-6">
+                    <p className="text-center text-gray-200 mb-6">
                         {isLogin
                             ? "Access your account"
                             : `Register using your ${registerWith}`}
                     </p>
-                    <p className={`text-red-600 text-center transition-opacity duration-300 ${errorMsg ? 'opacity-100' : 'opacity-0'}`}>
+                    <p className={`text-red-400 text-center transition-opacity duration-300 ${errorMsg ? 'opacity-100' : 'opacity-0'}`}>
                         {errorMsg}
                     </p>
 
@@ -163,10 +171,8 @@ export default function Login() {
                         </div>
                     )}
 
-                    <form
-                        onSubmit={handleSubmit}
-                        className="grid grid-cols-1 md:grid-cols-2 gap-4"
-                    >
+                    <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
                         {isLogin ? (
                             <>
                                 <div className="md:col-span-2">
@@ -301,14 +307,14 @@ export default function Login() {
                         )}
 
                         <div className="md:col-span-2 mt-4">
-                            <button className="btn btn-neutral w-full">
+                            <button className="btn w-full bg-primary text-dark hover:bg-darker hover:text-white transition-colors duration-300">
                                 {isLogin ? "Login" : "Sign Up"}
                             </button>
                         </div>
                     </form>
 
-                    <div className="mt-6 text-center">
-                        <p className="text-sm text-gray-600">
+                    <div className="mt-6 text-center text-gray-200">
+                        <p className="text-sm ">
                             {isLogin
                                 ? "Don't have an account?"
                                 : "Already have an account?"}{" "}
@@ -316,7 +322,7 @@ export default function Login() {
                                 onClick={() => {
                                     cleanform();
                                     setIsLogin(!isLogin);
-                                    
+
                                 }}
                                 className="link link-primary font-semibold"
                             >

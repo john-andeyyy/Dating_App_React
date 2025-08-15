@@ -8,7 +8,7 @@ export default function Layout() {
             <aside className='flex '>
                 <Sidebar />
             </aside>
-            <main className="flex-grow  m-2 p-5 rounded-xl ">
+            <main className="flex-grow  p-2 rounded-xl ">
                 <Outlet />
             </main>
 

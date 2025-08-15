@@ -1,2 +1,18 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+.bg-light {
+    background-color: #2E2E3A;
+}
+
+.bg-primary {
+    background-color: #5A5C7A;
+}
+
+.bg-dark {
+    background-color: #1C1C28;
+}
+
+.bg-darker {
+    background-color: #12121A;
+}

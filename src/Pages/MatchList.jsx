@@ -11,9 +11,7 @@ export default function MatchList() {
 
 
   const fetchMatches = () => {
-    console.log("fetchMatches");
-
-    if (!userId) return;
+    if (!userId) return; // safety check
     axios
       .get(`${Baseurl}/Matching/MatchedList/${userId}`)
       .then((res) => {
@@ -59,11 +57,11 @@ export default function MatchList() {
   };
 
   return (
-    <div className="flex flex-col h-screen">
-      <h1 className="p-4 pb-2 text-xl opacity-60 tracking-wide flex-shrink-0">
+     <div className="flex flex-col h-screen bg-darker">
+      <h1 className="p-4 pb-2 text-xl opacity-80 tracking-wide flex-shrink-0 text-dark">
         All current matches
       </h1>
-      <div className="flex-grow overflow-y-auto">
+      <div className="flex-grow overflow-y-auto p-4 space-y-4">
         {matches.length > 0 ? (
           matches.map((match) => (
             <List
