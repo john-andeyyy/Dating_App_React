@@ -8,7 +8,7 @@ export default function List({ id, name, age, bio, img, onRemoved }) {
 
     const handleRemoveClick = async () => {
         try {
-            const res = await axios.put("http://localhost:3000/Matching/Unlike", {
+            const res = await axios.put("http://localhost:3000/Matching/unMatch", {
                 Userid: userId,
                 MatchingId: id,
             });

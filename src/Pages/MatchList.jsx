@@ -11,7 +11,9 @@ export default function MatchList() {
 
 
   const fetchMatches = () => {
-    if (!userId) return; // safety check
+    console.log("fetchMatches");
+
+    if (!userId) return;
     axios
       .get(`${Baseurl}/Matching/MatchedList/${userId}`)
       .then((res) => {

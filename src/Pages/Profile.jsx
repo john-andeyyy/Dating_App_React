@@ -127,7 +127,7 @@ export default function Profile() {
         return age;
     };
     return (
-        <div className="p-4 overflow-y-auto md:overflow-visible max-h-screen md:max-h-none">
+        <div className="p-4 flex justify-center items-center min-h-screen">
             <div className="bg-[#191E24] shadow-xl rounded-2xl p-6 max-w-4xl w-full">
                 <h1 className="text-2xl font-bold text-center mb-6">User Profile</h1>
 
@@ -219,7 +219,7 @@ export default function Profile() {
                                     className={inputClass}
                                 />
                             </div>
-                            <div>
+                            {/* <div>
                                 <label className="block text-gray-400 text-sm mb-1">Phone Number</label>
                                 <input
                                     type="text"
@@ -228,8 +228,8 @@ export default function Profile() {
                                     onChange={handleChange}
                                     className={inputClass}
                                 />
-                            </div>
-                            <div>
+                            </div> */}
+                            {/* <div>
                                 <label className="block text-gray-400 text-sm mb-1">Email</label>
                                 <input
                                     type="email"
@@ -238,8 +238,8 @@ export default function Profile() {
                                     onChange={handleChange}
                                     className={inputClass}
                                 />
-                            </div>
-                            <div>
+                            </div> */}
+                            {/* <div>
                                 <label className="block text-gray-400 text-sm mb-1">Birthday</label>
                                 <input
                                     type="date"
@@ -248,7 +248,7 @@ export default function Profile() {
                                     onChange={handleChange}
                                     className={inputClass}
                                 />
-                            </div>
+                            </div> */}
                             <div className="md:col-span-2">
                                 <label className="block text-gray-400 text-sm mb-1">Bio</label>
                                 <textarea

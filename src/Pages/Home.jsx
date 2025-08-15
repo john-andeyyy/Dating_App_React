@@ -21,14 +21,21 @@ export default function Home() {
         .get(`${Baseurl}/Matching/PeopleList/${userId}`)
         .then((res) => {
           if (res.data?.data) {
+            const shuffleArray = (array) => {
+              return array
+                .map((a) => ({ sort: Math.random(), value: a }))
+                .sort((a, b) => a.sort - b.sort)
+                .map((a) => a.value);
+            };
+
             const formatted = res.data.data.map((user) => ({
               id: user._id,
               name: user.Name,
               bio: user.bio,
               image: getImageSrc(user.Image) || "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-              // isMatch: false,
             }));
-            setProfiles(formatted);
+
+            setProfiles(shuffleArray(formatted)); 
           }
         })
         .catch((err) => {
@@ -36,6 +43,7 @@ export default function Home() {
         });
     }
   }, [userId]);
+
 
 
   // Handlers
@@ -160,4 +168,5 @@ export default function Home() {
       </div>
     </div>
   );
+
 }

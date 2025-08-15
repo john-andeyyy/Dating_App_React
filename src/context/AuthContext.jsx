@@ -11,16 +11,19 @@ export const AuthProvider = ({ children }) => {
         return storedUser ? storedUser : null;
     })
 
-    const [data, setData] = useState({});
+    const [userdata, setuserData] = useState({});
     const [del, setDel] = useState(false)
 
     const login = async () => {
         const userid = localStorage.getItem('userId')
+        console.log("user id: " + userid);
+        
         try {
             const res = await axios.get(`${Baseurl}/user/auth/retrive/${userid}`);
             
-            setData(res.data);
+            setuserData(res.data.Data);
             setUser(res.data.Data);
+            
         } catch (error) {
             console.error(error.response?.data?.message || error.message);
         }
@@ -31,12 +34,12 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         localStorage.clear()
-        setData({})
+        setuserData({})
         setUser(null)
     }
 
     return (
-        <AuthContext.Provider value={{ login, user, data, logout, del, setDel }}>
+        <AuthContext.Provider value={{ login, user, userdata, logout, del, setDel }}>
             {children}
         </AuthContext.Provider>
     )
