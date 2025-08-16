@@ -138,7 +138,7 @@ export default function Login() {
     return (
         <div className="hero min-h-screen bg-base-200">
             <div className="hero-content flex-col ">
-                <div className="card w-full max-w-2xl shadow-2xl rounded-2xl p-8 bg-base-">
+                <div className="card w-full max-w-2xl shadow-2xl rounded-2xl p-8 bg-base-100 border-1 border-info-content">
                     <h1 className="text-3xl font-bold text-center mb-2 text-accent">
                         {isLogin ? "Login" : "New User Sign-Up"}
                     </h1>
