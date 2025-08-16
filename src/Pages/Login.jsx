@@ -38,6 +38,7 @@ export default function Login() {
             Phonenumber: "",
         });
         seterrorMsg('')
+        setProfileImage(null)
     }
 
 
@@ -79,7 +80,9 @@ export default function Login() {
                     localStorage.setItem("userId", res.data.Data._id);
                     localStorage.setItem("username", res.data.Data.Username);;
                     showToast('Login successful')
-                    navigate('/Home');
+                    if (user) {
+                        navigate('/Home');
+                    }
                     await login();
                 }
                 navigate("/Home");
@@ -187,6 +190,8 @@ export default function Login() {
                                         value={formData.name}
                                         onChange={handleChange}
                                         required
+                                        readOnly={isLoading}
+
                                     />
                                 </div>
 
@@ -200,6 +205,8 @@ export default function Login() {
                                         value={formData.Password}
                                         onChange={handleChange}
                                         required
+                                        readOnly={isLoading}
+
                                     />
                                 </div>
                             </>
@@ -215,9 +222,9 @@ export default function Login() {
                                     <input
                                         type={registerWith === "email" ? "email" : "tel"}
                                         name={registerWith === "email" ? "email" : "mobile"}
-                                            className="input input-bordered w-full bg-base-200"
+                                        className="input input-bordered w-full bg-base-200"
                                         placeholder={`Enter your ${registerWith === "email" ? "email" : "mobile number"}`}
-                                            value={registerWith === "email" ? formData.email : formData.Phonenumber}
+                                        value={registerWith === "email" ? formData.email : formData.Phonenumber}
                                         onChange={(e) => {
                                             if (registerWith === "email") {
                                                 setFormData({ ...formData, email: e.target.value });
@@ -234,6 +241,8 @@ export default function Login() {
                                             inputMode: "numeric"
                                         })}
                                         required
+                                            readOnly={isLoading}
+
                                     />
 
 
@@ -242,11 +251,13 @@ export default function Login() {
                                         <input
                                             type="text"
                                             name="name"
-                                                className="input input-bordered w-full bg-base-200"
+                                            className="input input-bordered w-full bg-base-200"
                                             placeholder="Enter your name"
                                             value={formData.name}
                                             onChange={handleChange}
                                             required
+                                            readOnly={isLoading}
+
                                         />
                                     </div>
                                 </div>
@@ -255,11 +266,12 @@ export default function Login() {
                                     <input
                                         type="password"
                                         name="Password"
-                                            className="input input-bordered w-full bg-base-200"
+                                        className="input input-bordered w-full bg-base-200"
                                         placeholder="Enter password"
                                         value={formData.Password}
                                         onChange={handleChange}
                                         required
+                                        readOnly={isLoading}
                                     />
                                 </div>
                                 <div>
@@ -267,7 +279,7 @@ export default function Login() {
                                     <input
                                         type="date"
                                         name="Birthday"
-                                            className="input input-bordered w-full bg-base-200"
+                                        className="input input-bordered w-full bg-base-200"
                                         value={formData.Birthday}
                                         onChange={handleChange}
                                         required
@@ -278,7 +290,7 @@ export default function Login() {
                                     <label className="label font-semibold">Short Bio</label>
                                     <textarea
                                         name="shortBio"
-                                            className="textarea textarea-bordered w-full bg-base-200"
+                                        className="textarea textarea-bordered w-full bg-base-200"
                                         placeholder="Tell us about yourself..."
                                         rows="3"
                                         value={formData.shortBio}

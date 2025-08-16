@@ -12,7 +12,7 @@ export default function Card({ name, bio, image }) {
                 />
             </figure>
             <div className="p-4 flex flex-col gap-2 bg-base-100 text-base-content">
-                <h2 className="text-lg sm:text-xl font-bold">{name}</h2>
+                <h2 className="text-lg sm:text-xl font-bold capitalize">{name}</h2>
                 <p className="text-sm text-info-content sm:text-base break-words">{bio}</p>
             </div>
         </div>
