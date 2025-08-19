@@ -1,17 +1,57 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import { io } from "socket.io-client";
 
 export default function Message() {
     const { user, userdata } = useAuth();
     const Baseurl = import.meta.env.VITE_BASEURL;
 
+    const [socket, setSocket] = useState(null);
     const [matchedList, setMatchedList] = useState([]);
     const [selectedMatch, setSelectedMatch] = useState(null);
     const [messages, setMessages] = useState({});
     const [inputText, setInputText] = useState("");
 
     const userId = user?._id;
+    const messagesEndRef = useRef(null);
+
+    useEffect(() => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: "auto" });
+        }
+    }, [messages, selectedMatch]);
+
+    useEffect(() => {
+        if (!userId) return;
+
+        const newSocket = io(Baseurl, { transports: ["websocket"] });
+        setSocket(newSocket);
+
+        newSocket.on("receive_message", (data) => {
+            const { senderId, receiverId, message, createdAt } = data;
+            const otherId = senderId === userId ? receiverId : senderId;
+
+            setMessages((prev) => ({
+                ...prev,
+                [otherId]: [
+                    ...(prev[otherId] || []),
+                    {
+                        senderId,
+                        receiverId,
+                        text: message,
+                        date: new Date(createdAt).toLocaleDateString(),
+                        time: new Date(createdAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                        }),
+                    },
+                ],
+            }));
+        });
+
+        return () => newSocket.disconnect();
+    }, [userId, Baseurl]);
 
     // Fetch matched list
     useEffect(() => {
@@ -22,19 +62,22 @@ export default function Message() {
             .catch((err) => console.error("Error fetching matched list:", err));
     }, [userId, Baseurl]);
 
-    // Fetch messages for selected match
+    // Select match & load conversation
     const handleSelectMatch = async (match) => {
         setSelectedMatch(match);
-        if (!userId) return;
+        socket?.emit("join_convo", { senderId: userId, receiverId: match._id });
 
         try {
-            const res = await axios.get(`${Baseurl}/Msg/MessageList/${userId}/${match._id}`);
+            const res = await axios.get(
+                `${Baseurl}/Msg/MessageList/${userId}/${match._id}`
+            );
             const conversation = res.data?.data || [];
+
             setMessages((prev) => ({
                 ...prev,
                 [match._id]: conversation.map((m) => ({
-                    sender: m.sender,
-                    senderName: m.senderName,
+                    senderId: m.senderID,
+                    receiverId: m.receiverId,
                     text: m.message,
                     date: m.date,
                     time: m.time,
@@ -45,35 +88,21 @@ export default function Message() {
         }
     };
 
-    // Send message
     const handleSend = async () => {
-        if (!inputText.trim() || !selectedMatch || !userdata) return;
+        if (!inputText.trim() || !selectedMatch || !socket) return;
 
         const newMessage = {
-            senderId: userdata._id,
+            senderId: userId,
             receiverId: selectedMatch._id,
             message: inputText.trim(),
         };
 
-        setMessages((prev) => ({
-            ...prev,
-            [selectedMatch._id]: [
-                ...(prev[selectedMatch._id] || []),
-                {
-                    sender: userdata.Email,
-                    senderName: userdata.Name,
-                    text: inputText.trim(),
-                    date: "Today",
-                    time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-                },
-            ],
-        }));
         setInputText("");
 
         try {
             await axios.post(`${Baseurl}/Msg/Send`, newMessage);
         } catch (err) {
-            console.error("Error sending message:", err);
+            console.error("Error saving message:", err);
         }
     };
 
@@ -83,22 +112,32 @@ export default function Message() {
         const blob = new Blob([byteArray], { type: "image/png" });
         return URL.createObjectURL(blob);
     };
-    
-    if (!userId || !userdata) return <div className="flex items-center justify-center h-screen ">Loading...</div>;
+
+    if (!userId || !userdata) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                Loading...
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col lg:flex-row h-screen">
-            {/* Left Panel */}
-            <div className="w-full lg:w-1/3 border-r border-dark flex flex-col bg-base-200 ">
-                <h2 className="p-4 text-lg font-semibold border-b border-dark text-base-content ">Matches</h2>
+            {/* Left Panel - Matches */}
+            <div className="w-full lg:w-1/3 border-r border-dark flex flex-col bg-base-200">
+                <h2 className="p-4 text-lg font-semibold border-b border-dark text-base-content">
+                    Matches
+                </h2>
                 <div className="flex-grow overflow-y-auto">
                     <ul className="bg-base-300">
                         {matchedList.map((match) => (
                             <li
                                 key={match._id}
                                 onClick={() => handleSelectMatch(match)}
-                                className={`cursor-pointer flex items-center gap-3 px-4 py-3 hover:bg-base-100/20 transition-colors rounded ${selectedMatch?._id === match._id ? "bg-base-100/20 font-semibold text-white" : ""
-                                    }`}
+                                className={`cursor-pointer flex items-center gap-3 px-4 py-3 hover:bg-base-100/20 transition-colors rounded 
+                                    ${selectedMatch?._id === match._id
+                                        ? "bg-base-100/20 font-semibold text-white"
+                                        : ""}`}
                             >
                                 <img
                                     src={
@@ -109,16 +148,8 @@ export default function Message() {
                                     className="w-10 h-10 rounded-full object-cover border-2 border-dark"
                                 />
                                 <div className="flex flex-col flex-1">
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-base-content/80">{match.name}</span>
-                                        {match.lastMessageAt && (
-                                            <span className="text-xs ">
-                                                {new Date(match.lastMessageAt).toLocaleDateString()}{" "}
-                                                {new Date(match.lastMessageAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                                            </span>
-                                        )}
-                                    </div>
-                                    <span className="text-xs  truncate max-w-[160px]">
+                                    <span className="text-base-content/80">{match.name}</span>
+                                    <span className="text-xs truncate max-w-[160px]">
                                         {match.lastMessage || "No messages yet"}
                                     </span>
                                 </div>
@@ -128,29 +159,34 @@ export default function Message() {
                 </div>
             </div>
 
-            {/* Right Panel */}
-            <div className="flex flex-col flex-1 p-4 lg:p-6  bg-base-100">
+            {/* Right Panel - Chat */}
+            <div className="flex flex-col flex-1 p-4 lg:p-6 bg-base-100">
                 {selectedMatch ? (
                     <>
-                        <h3 className="text-xl font-bold mb-4 ">Messages with<span className="text-base-content"> {selectedMatch.name}</span></h3>
+                        <h3 className="text-xl font-bold mb-4">
+                            Messages with{" "}
+                            <span className="text-base-content">{selectedMatch.name}</span>
+                        </h3>
 
                         <div className="flex-1 overflow-y-auto mb-4 p-4 bg-base-200 rounded-lg shadow-inner flex flex-col gap-2">
                             {(messages[selectedMatch._id] || []).map((msg, i) => {
-                                const isSent = msg.sender === userdata.Email;
+                                const isSent = msg.senderId === userdata._id;
                                 return (
                                     <div
                                         key={i}
-                                        className={`max-w-xs px-4 py-2 rounded-xl shadow-sm ${isSent ? "bg-base-300 text-white self-end" : "bg-base-300 self-start"
+                                        className={`max-w-xs px-4 py-2 rounded-xl shadow-sm ${isSent
+                                                ? "bg-accent text-black self-end"
+                                                : "bg-base-300 self-start"
                                             }`}
                                     >
-                                        {/* <div className="text-xs font-semibold mb-1">{msg.senderName}</div> */}
                                         <div className="text-sm break-words">{msg.text}</div>
-                                        <div className="text-xs text-base-content mt-1 text-right ">
+                                        <div className="text-xs text-base-content mt-1 text-right">
                                             {msg.date} • {msg.time}
                                         </div>
                                     </div>
                                 );
                             })}
+                            <div ref={messagesEndRef} />
                         </div>
 
                         <div className="flex gap-2">
@@ -158,7 +194,7 @@ export default function Message() {
                                 rows={2}
                                 value={inputText}
                                 onChange={(e) => setInputText(e.target.value)}
-                                className="flex-grow resize-none p-2 border  rounded focus:ring-2 focus:ring-accent bg-base-200"
+                                className="flex-grow resize-none p-2 border rounded focus:ring-2 focus:ring-accent bg-base-200"
                                 placeholder="Type your message..."
                             />
                             <button
@@ -170,7 +206,7 @@ export default function Message() {
                         </div>
                     </>
                 ) : (
-                    <div className="flex items-center justify-center h-full  italic">
+                    <div className="flex items-center justify-center h-full italic">
                         Select a match to view messages
                     </div>
                 )}

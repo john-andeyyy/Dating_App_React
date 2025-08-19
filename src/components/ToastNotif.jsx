@@ -5,7 +5,7 @@ const toastTypes = { success: toast.success, error: toast.error, info: toast.inf
 
 const defaultOptions = {
     position: "top-right",
-    autoClose: 5000,
+    autoClose: 2000,
     hideProgressBar: false,
     closeOnClick: false,
     pauseOnHover: false,

@@ -7,8 +7,20 @@ import Profile from './Pages/Profile';
 import MatchList from './Pages/MatchList';
 import Message from './Pages/Message';
 import { Bounce, ToastContainer, Zoom } from 'react-toastify';
+import { useAuth } from './context/AuthContext';
+import { useEffect } from 'react';
+import { initSocket } from "./utils/Socket-Notif";
 
 function App() {
+
+  const { userdata } = useAuth();
+
+  useEffect(() => {
+    if (userdata?._id) {
+      initSocket(userdata._id);
+    }
+  }, [userdata]);
+
   return (
     <div>
       <ToastContainer

@@ -24,14 +24,20 @@ export const AuthProvider = ({ children }) => {
 
             setuserData(res.data.Data);
             setUser(res.data.Data);
+            
 
         } catch (error) {
             console.error(error.response?.data?.message || error.message);
         }
+
     };
     useEffect(() => {
         login()
     }, [])
+    // useEffect(() => {
+    //     console.log("userdata updated:", userdata);
+    // }, [userdata]);
+
 
     const logout = () => {
         localStorage.clear()

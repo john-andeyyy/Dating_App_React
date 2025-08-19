@@ -15,6 +15,7 @@ export default function Home() {
   const [isDragging, setIsDragging] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
   const [Loading, setLoading] = useState(true);
+  const [IsEmpty, setIsEmpty] = useState(false);
 
   const startPos = useRef({ x: 0, y: 0 });
 
@@ -24,20 +25,35 @@ export default function Home() {
     const fetchProfiles = async () => {
       try {
         const res = await axios.get(`${Baseurl}/Matching/PeopleList/${userId}`);
-        if (res.data?.data) {
+
+        if (res.data?.data?.length) {
           const formatted = res.data.data.map((user) => ({
             id: user._id,
             name: user.Name,
             bio: user.bio,
-            image: getImageSrc(user.Image) || "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg",
+            image:
+              getImageSrc(user.Image) ||
+              "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg",
           }));
+
           setProfiles(formatted.sort(() => Math.random() - 0.5));
-          setLoading(false)
+          setIsEmpty(false);
+        } else {
+          setIsEmpty(true);
         }
       } catch (err) {
-        console.error("Error fetching profiles:", err);
+        if (err.response?.status === 404) {
+          console.warn("No available matches");
+          setIsEmpty(true);
+        } else {
+          console.error("Error fetching profiles:", err);
+          alert(err.message);
+        }
+      } finally {
+        setLoading(false);
       }
     };
+
 
     fetchProfiles();
   }, [userId, Baseurl]);
@@ -113,11 +129,20 @@ export default function Home() {
     return (
       <div className="flex items-center justify-center h-screen flex-col px-4 text-base-content bg-base-200">
         <h2 className="text-2xl font-bold mb-4 animate-pulse">Loading...</h2>
-        <p className="text-[#6EACDA]">Please wait while we find matches for you 💖</p>
+        <p className="text-[#6EACDA]">Please wait while we find matches for you</p>
       </div>
     );
   }
   if (!profiles.length || currentIndex >= profiles.length) {
+    return (
+      <div className="flex items-center justify-center h-screen
+        flex-col px-4 text-base-content bg-base-200">
+        <h2 className="text-2xl font-bold mb-4">No available profiles</h2>
+        <p className="text-[#6EACDA]">Check back later for more people to meet!</p>
+      </div>
+    );
+  }
+  if (IsEmpty) {
     return (
       <div className="flex items-center justify-center h-screen
         flex-col px-4 text-base-content bg-base-200">
