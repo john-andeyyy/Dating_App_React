@@ -2,7 +2,7 @@ import { io } from "socket.io-client";
 import { showToast } from "../components/ToastNotif";
 import React from "react";
 
-const Baseurl = import.meta.env.VITE_BASEURL;
+export const Baseurl = import.meta.env.VITE_BASEURL;
 let socket;
 
 export const initSocket = (userId) => {

@@ -3,66 +3,20 @@ import Card from "../components/Card";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { showToast } from "../components/ToastNotif";
+import { useRandomProvider } from "../context/RandomListContext";
 
 export default function Home() {
   const { user } = useAuth();
+  const { profiles, IsEmpty, Loading } = useRandomProvider();
   const userId = user?._id;
   const Baseurl = import.meta.env.VITE_BASEURL;
-
-  const [profiles, setProfiles] = useState([]);
+  const isLoading = Loading;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
-  const [Loading, setLoading] = useState(true);
-  const [IsEmpty, setIsEmpty] = useState(false);
 
   const startPos = useRef({ x: 0, y: 0 });
-
-  useEffect(() => {
-    if (!userId) return;
-
-    const fetchProfiles = async () => {
-      try {
-        const res = await axios.get(`${Baseurl}/Matching/PeopleList/${userId}`);
-
-        if (res.data?.data?.length) {
-          const formatted = res.data.data.map((user) => ({
-            id: user._id,
-            name: user.Name,
-            bio: user.bio,
-            image:
-              getImageSrc(user.Image) ||
-              "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-          }));
-
-          setProfiles(formatted.sort(() => Math.random() - 0.5));
-          setIsEmpty(false);
-        } else {
-          setIsEmpty(true);
-        }
-      } catch (err) {
-        if (err.response?.status === 404) {
-          console.warn("No available matches");
-          setIsEmpty(true);
-        } else {
-          console.error("Error fetching profiles:", err);
-          alert(err.message);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-
-    fetchProfiles();
-  }, [userId, Baseurl]);
-
-  const getImageSrc = (imageBase64) => {
-    if (!imageBase64) return null;
-    return `data:image/png;base64,${imageBase64}`;
-  };
-
 
   const handleStart = (x, y) => {
     startPos.current = { x, y };
@@ -125,7 +79,7 @@ export default function Home() {
   const likeOpacity = position.x > 0 ? Math.min(position.x / 120, 1) : 0;
   const nopeOpacity = position.x < 0 ? Math.min(-position.x / 120, 1) : 0;
   const blurEffect = Math.min(Math.abs(position.x) / 50, 5);
-  if (Loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen flex-col px-4 text-base-content bg-base-200">
         <h2 className="text-2xl font-bold mb-4 animate-pulse">Loading...</h2>

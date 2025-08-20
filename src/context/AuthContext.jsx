@@ -17,8 +17,9 @@ export const AuthProvider = ({ children }) => {
 
     const login = async () => {
         const userid = localStorage.getItem('userId')
+        if (!userid) return
         console.log("user id: " + userid);
-
+        
         try {
             const res = await axios.get(`${Baseurl}/user/auth/retrive/${userid}`);
 

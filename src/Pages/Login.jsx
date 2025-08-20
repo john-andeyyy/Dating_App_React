@@ -39,6 +39,7 @@ export default function Login() {
         });
         seterrorMsg('')
         setProfileImage(null)
+        setProfileImageFile(null)
     }
 
 
